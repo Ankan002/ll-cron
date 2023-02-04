@@ -19,13 +19,13 @@ exports.updateTeamRecord = async () => {
         if(!myTeamRecordRetrieved){
             await TeamRecord.create({
                 user: retrievedUser.id,
-                totalBussiness: bussinessCalculatedResults.totalBussiness,
+                totalBussiness: bussinessCalculatedResults.totalMemberBussiness,
                 totalMembers: bussinessCalculatedResults.totalMembers
             });
         } else {
             await TeamRecord.findByIdAndUpdate(myTeamRecordRetrieved.id, {
                 $set: {
-                    totalBussiness: bussinessCalculatedResults.totalBussiness,
+                    totalBussiness: bussinessCalculatedResults.totalMemberBussiness,
                     totalMembers: bussinessCalculatedResults.totalMembers
                 }
             }, {new: true});
