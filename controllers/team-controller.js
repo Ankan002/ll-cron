@@ -1,6 +1,6 @@
-import { updateTeamRecord } from "../helpers/update-team-record"
+const { updateTeamRecord } = require("../helpers/update-team-record")
 
-export const checkTeamRecord = (req, res) => {
+exports.checkTeamRecord = (req, res) => {
     updateTeamRecord()
 
     return res.status(200).json({

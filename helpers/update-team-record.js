@@ -1,10 +1,10 @@
 "user strict"
 
-import User from "../models/User";
-import TeamRecord from "../models/TeamRecord";
-import DepositRecord from "../models/DepositRecord";
+const User = require("../models/User");
+const TeamRecord = require("../models/TeamRecord");
+const DepositRecord = require("../models/DepositRecord");
 
-export const updateTeamRecord = async () => {
+exports.updateTeamRecord = async () => {
     const teamRecordCache = {};
 
     const allUsersIds = await User.find({}).select("id");

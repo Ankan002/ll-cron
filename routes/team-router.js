@@ -1,6 +1,8 @@
-import {Router} from "express";
-import { checkTeamRecord } from "../controllers/team-controller";
+const express = require("express");
+const { checkTeamRecord } = require("../controllers/team-controller");
 
-export const teamRouter = Router();
+const teamRouter = express.Router();
 
 teamRouter.post("/team-record", checkTeamRecord);
+
+module.exports = teamRouter;

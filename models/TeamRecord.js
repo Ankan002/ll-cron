@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const TeamRecordSchema = new mongoose.Schema({
     user: {
@@ -15,4 +15,4 @@ const TeamRecordSchema = new mongoose.Schema({
     }
 }, {timestamps: true});
 
-export default TeamRecord = mongoose.model("TeamRecord", TeamRecordSchema);
+module.exports = mongoose.model("TeamRecord", TeamRecordSchema);

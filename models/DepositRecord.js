@@ -1,5 +1,4 @@
-
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 
 const DepositRecordSchema = new mongoose.Schema({
@@ -37,5 +36,5 @@ const DepositRecordSchema = new mongoose.Schema({
   timestamps: true,
 });
 
-export default DepositRecord = mongoose.model("DepositFund", DepositRecordSchema);
+module.exports = mongoose.model("DepositFund", DepositRecordSchema);
 
