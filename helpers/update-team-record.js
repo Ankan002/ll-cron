@@ -56,8 +56,6 @@ const updateTeamRecordHelper = async (userId, teamRecordCache) => {
         }
     }
 
-    if (userId === "63dfd8b8d19dfb381e8ff16a") console.log(childUsers.length);
-
     if(childUsers.length <= 0) {
         teamRecordCache[userId] = {
             totalMembers: 0,
@@ -83,8 +81,6 @@ const updateTeamRecordHelper = async (userId, teamRecordCache) => {
         totalMembers += foundRecords.totalMembers + foundRecords.myCount;
         totalBussiness += foundRecords.totalMemberBussiness + foundRecords.myInvestment;
     }
-
-    // console.log(totalMembers, totalBussiness);
 
     teamRecordCache[userId] = {
         totalMembers,
