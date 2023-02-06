@@ -140,10 +140,7 @@ const calculateRewards = async (userId, rewardCache) => {
 
   console.log(userId, bestAmount, secondBestAmount, thirdBestAmount);
 
-  const rewardAmount =
-    bestAmount * (40 / 100) +
-    secondBestAmount * (30 / 100) +
-    thirdBestAmount * (30 / 100);
+  const rewardAmount = bestAmount + secondBestAmount + thirdBestAmount;
 
   rewardCache[userId] = {
     rewardTier: eligibleTier,
@@ -159,6 +156,8 @@ exports.grantReward = async () => {
   const rewardCache = {};
 
   const allUsersIds = await User.find({}).select("id");
+
+  console.log(allUsersIds.length);
 
   for (let retrievedUser of allUsersIds) {
     const rewards = await CareerReward.find({
@@ -187,6 +186,9 @@ exports.grantReward = async () => {
         retrievedUser.id,
         rewardCache
       );
+      // console.log(retrievedUser.id)
+      // console.log(eachDayRewardToBeGranted);
+
       const dailyReward = getDailyRewardLevel(
         eachDayRewardToBeGranted.rewardTier
       );
@@ -229,6 +231,8 @@ exports.grantReward = async () => {
         time_granted: dateString,
       });
     }
+
+    console.log(Object.keys(rewardCache).length);
   }
 
   console.log(rewardCache);

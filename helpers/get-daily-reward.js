@@ -1,28 +1,28 @@
 const level = {
-  InEligible: "Not Eligible",
-  Junior: "$0.5",
-  Pro: "Domestic Tour",
-  Starter: "Laptop",
-  "Pro Starter": "$25",
-  Professional: "$100",
-  Expert: "$200",
-  Senate: "$300",
-  Director: "$500",
-  President: "$1000",
+  "InEligible": "Not Eligible",
+  "Junior": "$0.5",
+  "Pro": "Domestic Tour",
+  "Starter": "Laptop",
+  "Pro-Starter": "$25",
+  "Professional": "$100",
+  "Expert": "$200",
+  "Senate": "$300",
+  "Director": "$500",
+  "President": "$1000",
 };
 
 exports.getDailyRewardLevel = (tier) => level[tier];
 
 exports.levelEligibleFor = (bestIncome, secondBestIncome, thirdBestIncome) => {
-  const partialBest = bestIncome * (40 / 100);
-  const partialSecondBest = secondBestIncome * (30 / 100);
-  const partialThirdBest = thirdBestIncome * (30 / 100);
+  const partialBest = bestIncome;
+  const partialSecondBest = secondBestIncome;
+  const partialThirdBest = thirdBestIncome;
 
   console.log(partialBest, partialSecondBest, partialThirdBest);
 
-  if(partialBest >= 4 && partialSecondBest >=3 && partialThirdBest >= 3) {
+  if(partialBest >= 1000 && partialSecondBest >= 750 && partialThirdBest >= 750) {
 
-    if(partialBest >= 4.8 && partialSecondBest >= 3.6 && partialThirdBest >= 3.6) {
+    if(partialBest >= 3000 && partialSecondBest >= 2250 && partialThirdBest >= 2500) {
 
       if(partialBest >= 10000 && partialSecondBest >= 7500 && partialThirdBest >= 7500){
 
@@ -53,7 +53,7 @@ exports.levelEligibleFor = (bestIncome, secondBestIncome, thirdBestIncome) => {
             else return "Professional";
           }
 
-          else return "Pro Starter";
+          else return "Pro-Starter";
         }
 
         else return "Starter";
