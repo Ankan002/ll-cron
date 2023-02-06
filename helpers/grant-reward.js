@@ -1,7 +1,7 @@
 const User = require("../models/User");
 const CareerReward = require("../models/CareerReward");
 const { format, differenceInHours, parse, subDays } = require("date-fns");
-const { getDailyRewardLevel } = require("./get-daily-reward");
+const { getDailyRewardLevel, levelEligibleFor } = require("./get-daily-reward");
 
 const convertToMaxHeap = (referredUsersPackageAmounts) => {
   let currentIndex = Math.floor((referredUsersPackageAmounts.length - 1) / 2);
@@ -85,11 +85,10 @@ const calculateRewards = async (userId, rewardCache) => {
 
   if (childUsers.length < 0) {
     rewardCache[userId] = {
+      rewardTier: "InEligible",
       rewardAmount: 0,
-      bestChildrenIncomes: [0],
-      myAmount: Number(userRetrieved.PackageAmount)
-        ? Number(userRetrieved.PackageAmount)
-        : 0,
+      childIncome: 0,
+      myAmount: Number(userRetrieved.Wallete),
     };
 
     return rewardCache[userId];
@@ -105,9 +104,26 @@ const calculateRewards = async (userId, rewardCache) => {
 
     myBestChildrenIncomes = [
       ...myBestChildrenIncomes,
-      ...currentChildrenIncomes.bestChildrenIncomes,
-      currentChildrenIncomes.myAmount,
+      currentChildrenIncomes.childIncome + currentChildrenIncomes.myAmount,
     ];
+  }
+
+  let totalChildIncome = 0;
+
+  myBestChildrenIncomes.forEach((num) => (totalChildIncome += num));
+
+  if (userId === "63dfd5f9d19dfb381e8ff109")
+    console.log(userId, myBestChildrenIncomes.length);
+
+  if (myBestChildrenIncomes.length < 3) {
+    rewardCache[userId] = {
+      rewardTier: "InEligible",
+      rewardAmount: 0,
+      childIncome: totalChildIncome,
+      myAmount: Number(userRetrieved.Wallete),
+    };
+
+    return rewardCache[userId];
   }
 
   convertToMaxHeap(myBestChildrenIncomes);
@@ -116,17 +132,24 @@ const calculateRewards = async (userId, rewardCache) => {
   const secondBestAmount = heapPop(myBestChildrenIncomes);
   const thirdBestAmount = heapPop(myBestChildrenIncomes);
 
+  const eligibleTier = levelEligibleFor(
+    bestAmount,
+    secondBestAmount,
+    thirdBestAmount
+  );
+
+  console.log(userId, bestAmount, secondBestAmount, thirdBestAmount);
+
   const rewardAmount =
     bestAmount * (40 / 100) +
     secondBestAmount * (30 / 100) +
     thirdBestAmount * (30 / 100);
 
   rewardCache[userId] = {
+    rewardTier: eligibleTier,
     rewardAmount: rewardAmount,
-    bestChildrenIncomes: [bestAmount, secondBestAmount, thirdBestAmount],
-    myAmount: Number(userRetrieved.PackageAmount)
-      ? Number(userRetrieved.PackageAmount)
-      : 0,
+    childIncome: totalChildIncome,
+    myAmount: Number(userRetrieved.Wallete),
   };
 
   return rewardCache[userId];
@@ -158,46 +181,57 @@ exports.grantReward = async () => {
 
       const totalDaysToBeGranted = hourDifference % 24;
 
-      if (totalDaysToBeGranted <= 0) continue;
+      // if (totalDaysToBeGranted <= 0) continue;
 
       const eachDayRewardToBeGranted = await calculateRewards(
         retrievedUser.id,
         rewardCache
       );
       const dailyReward = getDailyRewardLevel(
-        eachDayRewardToBeGranted.rewardAmount
+        eachDayRewardToBeGranted.rewardTier
       );
 
-      for (let i = 0; i < totalDaysToBeGranted; i++) {
-        const date = subDays(new Date(), i);
-        const dateString = format(date, "dd MM yyyy HH:mm");
+      // for (let i = 0; i < totalDaysToBeGranted; i++) {
+      //   const date = subDays(new Date(), i);
+      //   const dateString = format(date, "dd MM yyyy HH:mm");
 
-        await CareerReward.create({
-          user_id: retrievedUser.id,
-          reward_level: dailyReward.level,
-          reward_granted: dailyReward.reward,
-          time_granted: dateString,
-        });
-      }
+      //   await CareerReward.create({
+      //     user_id: retrievedUser.id,
+      //     reward_level: eachDayRewardToBeGranted.rewardTier,
+      //     reward_granted: dailyReward,
+      //     time_granted: dateString,
+      //   });
+      // }
+
+      const dateString = format(new Date(), "dd MM yyyy HH:mm");
+
+      await CareerReward.create({
+        user_id: retrievedUser.id,
+        reward_level: eachDayRewardToBeGranted.rewardTier,
+        reward_granted: dailyReward,
+        time_granted: dateString,
+      });
     } else {
       const eachDayRewardToBeGranted = await calculateRewards(
         retrievedUser.id,
         rewardCache
       );
       const dailyReward = getDailyRewardLevel(
-        eachDayRewardToBeGranted.rewardAmount
+        eachDayRewardToBeGranted.rewardTier
       );
 
       const dateString = format(new Date(), "dd MM yyyy HH:mm");
 
       await CareerReward.create({
         user_id: retrievedUser.id,
-        reward_level: dailyReward.level,
-        reward_granted: dailyReward.reward,
+        reward_level: eachDayRewardToBeGranted.rewardTier,
+        reward_granted: dailyReward,
         time_granted: dateString,
       });
     }
   }
+
+  console.log(rewardCache);
 
   console.log("DONE!!");
 };

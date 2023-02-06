@@ -11,55 +11,59 @@ const level = {
   President: "$1000",
 };
 
-exports.getDailyRewardLevel = (amount) => {
-  if (amount >= 2500)
-    return {
-      level: "Junior",
-      reward: level.Junior,
-    };
-  else if (amount >= 7500)
-    return {
-      level: "Pro",
-      reward: level.Pro,
-    };
-  else if (amount >= 25000)
-    return {
-      level: "Starter",
-      reward: level.Starter,
-    };
-  else if (amount >= 100000)
-    return {
-      level: "Pro Starter",
-      reward: level["Pro Starter"],
-    };
-  else if (amount >= 250000)
-    return {
-      level: "Professional",
-      reward: level.Professional,
-    };
-  else if (amount >= 500000)
-    return {
-      level: "Expert",
-      reward: level.Expert,
-    };
-  else if (amount >= 1000000)
-    return {
-      level: "Senate",
-      reward: level.Senate,
-    };
-  else if (amount >= 1500000)
-    return {
-      level: "Director",
-      reward: level.Director,
-    };
-  else if (amount >= 2500000)
-    return {
-      level: "President",
-      reward: level.President,
-    };
-  else
-    return {
-      level: "Ineligible",
-      reward: level.InEligible,
-    };
-};
+exports.getDailyRewardLevel = (tier) => level[tier];
+
+exports.levelEligibleFor = (bestIncome, secondBestIncome, thirdBestIncome) => {
+  const partialBest = bestIncome * (40 / 100);
+  const partialSecondBest = secondBestIncome * (30 / 100);
+  const partialThirdBest = thirdBestIncome * (30 / 100);
+
+  console.log(partialBest, partialSecondBest, partialThirdBest);
+
+  if(partialBest >= 4 && partialSecondBest >=3 && partialThirdBest >= 3) {
+
+    if(partialBest >= 4.8 && partialSecondBest >= 3.6 && partialThirdBest >= 3.6) {
+
+      if(partialBest >= 10000 && partialSecondBest >= 7500 && partialThirdBest >= 7500){
+
+        if(partialBest >= 40000 && partialSecondBest >= 30000 && partialThirdBest >= 30000) {
+
+          if(partialBest >= 100000 && partialSecondBest >= 75000 && partialThirdBest >= 75000) {
+
+            if(partialBest >= 200000 && partialSecondBest >= 150000 && partialThirdBest >= 150000){
+
+              if(partialBest >= 400000 && partialSecondBest >= 300000 && partialThirdBest >= 300000) {
+
+                if(partialBest >= 600000 && partialSecondBest >= 450000 && partialThirdBest >= 450000) {
+
+                  if(partialBest >= 1000000 && partialSecondBest >= 750000 && partialThirdBest >= 750000){
+                    return "President";
+                  }
+
+                  else return "Director";
+
+                }
+
+                else return "Senate";
+              }
+
+              else return "Expert";
+            }
+
+            else return "Professional";
+          }
+
+          else return "Pro Starter";
+        }
+
+        else return "Starter";
+      }
+
+      else return "Pro";
+    }
+
+    else return "Junior";
+  }
+
+  else return "InEligible";
+}
